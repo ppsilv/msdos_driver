@@ -1,0 +1,36 @@
+floppy.img: boot.bin kernel.bin config.sys MOCADAS.SYS
+# Cria imagem vazia
+dd if=/dev/zero of=$@ bs=512 count=2880 status=none
+
+# Grava bootloader no setor 0 (MBR)
+dd if=boot.bin of=$@ bs=512 conv=notrunc status=none
+
+# Grava kernel no setor 1
+dd if=kernel.bin of=$@ bs=512 seek=1 conv=notrunc status=none
+
+# Grava config.sys no setor 2
+dd if=config.sys of=$@ bs=512 seek=2 conv=notrunc status=none
+
+# Grava MOCADAS.SYS no setor 3
+dd if=MOCADAS.SYS of=$@ bs=512 seek=3 conv=notrunc status=none
+
+    # Verifica a gravação
+    hexdump -C $@ | head -20
+
+dd if=config.sys of=flpy0001.img bs=512 seek=2 conv=notrunc status=none
+
+mcopy -i flpy0001.img config.sys ::/
+mcopy -i flpy0001.img MOCADAS.SYS ::/
+
+/usr/bin/watcom
+
+export WATCOM=/usr/bin/watcom  # Ajuste conforme sua instalação
+export PATH=$WATCOM/binl:$PATH
+
+qemu-system-i386 -m 16M -drive file=dos_disk.qcow2,format=qcow2 -boot c -serial stdio -fda flpy0001.img
+
+
+qemu-system-i386 -cpu 8086 -m 640K -fda flpy0001.img -boot c -machine pc,accel=kvm -no-acpi -serial stdio
+
+nasm -f bin -o mocadas.sys mocadas.asm
+

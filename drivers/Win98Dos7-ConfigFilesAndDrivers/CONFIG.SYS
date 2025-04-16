@@ -1,0 +1,106 @@
+REM - line start with REM means line with comment, or not used code
+rem device=C:\WINDOWS\COMMAND\display.sys con=(ega,,1)
+rem Country=042,852,C:\WINDOWS\COMMAND\country.sys
+
+[MENU] 
+Rem individual Windows 98 boot menu items, if im not work for this you not have to adjusted msdos.sys to non GUI boot
+REM First parametr is internal code branch name, same as label in Pascal or Qbasic jumps, second parametr is bootmenu text for such option
+MenuItem=win,Windows 98SE
+MenuItem=Win98SafeMode,Windows 98 Safe mode - press F5 added by RuThaN
+MenuItem=dosXMS,Dos vanilla, xms
+MenuItem=pro,Dos Protected mode
+MenuItem=ems,Dos EMS-Expanded Memory 64MB limited - For Most of Dos games
+
+REM Default menu item, second number is how long to wait in seconds
+MenuDefault=win,5
+
+rem Windows 98 part
+[win]
+rem include command I good to thing which you want to use multipletimes 
+include himemWin
+REM DEVICEHIGH=C:\WINDOWS\EMM386.EXE
+
+[Win98SafeMode]
+include himemWin
+
+[dosXMS] 
+rem Standard Dos settings 
+include himemDos
+include xms
+include env
+include cdrom
+include sound
+
+[pro] 
+rem Protected mode good for DOS4GW or games from France (Ishar).
+include himemDos
+include env
+include cdrom
+include sound
+
+
+[ems] 
+rem For Old Dos games which needed Expanded memmory  
+include himemDos
+include emsDos
+include env
+include cdrom
+include sound
+
+[cdrom]
+REM is multiple lines for multiple drivers IDE/SATA etc unRem some lines and try to find rigth combination for you
+REM DEVICE=C:\DRIVERS\VIDECDD.SYS /D:OPTICAL
+REM GCDROM is Sata DRIVER
+DEVICEHIGH=C:\DRIVERS\GCDROM.SYS /D:CDROM 
+REM Alternative for test
+REM This is not working with Conroe MB with Sata drive
+REM DEVICEHIGH=C:\DRIVERS\XCDROM.SYS /D:CDROM 
+REM Non working on Conroe
+REM DEVICE=C:\DRIVERS\AHCI.SYS /D:CDROM
+
+REM HDD quicker if is IDE, test it with rawspeed
+REM DEVICEHIGH=C:\DRIVERS\UDMA.SYS
+
+
+[sound]
+rem Config.sys Code block for Dos Sound card, added by Sound card installer, Autoexec part add to Autoexe.sys
+
+[env]
+rem This options could safe a bit of memory, only 6 or less drive letters
+LASTDRIVE=g
+switches=/f
+rem Some part Dos is loaded into upper memory are, it save lower memory
+DOS=HIGH,UMB
+
+rem Max. #No parallely open files in Dos, if you dont use Accounting or Database application you could set lesser number - safe some memory
+FILES=120
+
+
+[himemWin]
+REM by RuthaN, 1 GB+ for Windows98, ted zmeseno na 1024 navod na cesky strance
+rem Few version of memory manager, use only 4 option, original Himem.sys has problem with 512+ MB of ram
+REM DEVICE=C:\WINDOWS\HIMEM.SYS
+REM DEVICE=C:\WINDOWS\HIMEM.EXE /MAX=1148576 /NUMHANDLES=64 /METHOD:FAST /VERBOSE
+DEVICE=C:\WINDOWS\HIMEMX.EXE /MAX=1148576 /NUMHANDLES=64 /METHOD:FAST /VERBOSE
+
+
+[himemDOS]
+rem Few version of memory manager, use only 4 option, original Himem.sys has problem with 512+ MB of ram
+REM DEVICE=C:\WINDOWS\HIMEM.EXE /MAX=65424 /METHOD:FAST /VERBOSE
+DEVICE=C:\WINDOWS\HIMEMX.EXE /MAX=65424 /METHOD:FAST /VERBOSE
+
+[xms]
+rem Manager of extended memory, which set this memory as Extended - XMS
+DEVICE=C:\WINDOWS\EMM386.EXE noems
+
+[emsDOS]
+Rem Set extended memory as Expanded EMS
+DEVICE=C:\WINDOWS\emm386.exe RAM
+
+[common]
+rem Shared drivers for all choices in the menu
+rem device=C:\WINDOWS\COMMAND\display.sys con=(ega,,1)
+rem Country=042,852,C:\WINDOWS\COMMAND\country.sys
+
+
+
